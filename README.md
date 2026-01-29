@@ -118,10 +118,18 @@
 
 ### test10
 
-- 使用 SOCI 读取配置并对 PostgreSQL 执行简单示例查询（COUNT、按 id 查询单行）。
+- 使用 SOCI + `CConfig` 演示对 PostgreSQL 的同步访问：配置验证、按列绑定的单行查询、`rowset` 全表遍历与简单计数查询。
 
 主要行为要点
 
-- 从 CConfig 加载 DB 配置并拼接 libpq 风格连接串；建立 soci::session。
-- 示例：1) SELECT COUNT(*)（into int）；2) SELECT id, username, email WHERE id=1（into 多列并打印）。
-- 目标：演示 SOCI 的基本用法与同步查询。
+- 配置：从 `../config/CConfig.yaml` 读取 `dbname`、`user`、`password`、`hostaddr`、`port`（若配置不完整程序会打印错误并以退出码 `2` 退出）。
+- 连接：将配置拼成 libpq 风格连接串并用 `soci::session` 建立 PostgreSQL 连接（依赖 SOCI 的 postgresql 后端）。
+- 单行查询：演示使用多个 `soci::into` 分别绑定每个字段（比 `type_conversion` 更直接、可靠）的参数化查询（示例：按 `id` 查询并打印 `User`）。
+- 全表遍历：使用 `soci::rowset<soci::row>` 迭代 `users` 表并按字段读取（`id`、`username`、`full_name`、`email`、`phone`）并打印结果。
+- 计数示例：演示 `SELECT COUNT(*)` 到 `int` 的用法。
+- 错误与退出：捕获 std::exception 并返回非零退出码（一般异常返回 `1`）；配置错误返回 `2`。
+
+快速运行提示
+
+- 依赖：SOCI (PostgreSQL backend)、项目的 `CConfig`（请确保 `users` 表存在并含示例字段）。
+- 运行：先配置好 `../config/CConfig.yaml`（填写 DB 连接信息），再构建并运行生成的 `test10` 可执行文件以查看示例输出。
