@@ -1,0 +1,22 @@
+project(test01)
+
+# 查找源文件
+file(GLOB SOURCES "src/*.cpp")
+
+# 创建可执行文件 
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+# 添加头文件包含路径
+target_include_directories(${PROJECT_NAME}
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include # 本地头文件路径
+    PUBLIC
+        ${COMMON_INCLUDE_DIR} # 公共头文件路径 
+)
+
+# 链接 libpqxx
+target_link_libraries(${PROJECT_NAME}
+    PRIVATE
+        libpqxx::pqxx
+        ${PostgreSQL_LIBRARIES}
+)
