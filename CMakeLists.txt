@@ -31,6 +31,7 @@ add_subdirectory(test07)
 add_subdirectory(test08)
 add_subdirectory(test09)
 add_subdirectory(test10)
+add_subdirectory(test11)
 
 message(STATUS "构建类型: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Build 目录: ${CMAKE_BINARY_DIR}")

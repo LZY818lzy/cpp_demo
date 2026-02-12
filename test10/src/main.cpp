@@ -120,24 +120,24 @@ int main()
             user.print();
         }
 
-        // 演示 B. 查看所有用户
-        std::cout << "\nB. 查询所有用户:" << std::endl;
-        {
-            // 使用 soci::rowset<soci::row>
-            soci::rowset<soci::row> rs = (sql.prepare << 
-                "SELECT id, username, full_name, email, phone FROM users");
+        // // 演示 B. 查看所有用户
+        // std::cout << "\nB. 查询所有用户:" << std::endl;
+        // {
+        //     // 使用 soci::rowset<soci::row>
+        //     soci::rowset<soci::row> rs = (sql.prepare << 
+        //         "SELECT id, username, full_name, email, phone FROM users");
             
-            for (const soci::row& r : rs) {
-                User user;
-                user.id = r.get<int>("id");
-                user.username = r.get<std::string>("username");
-                user.full_name = r.get<std::string>("full_name");
-                user.email = r.get<std::string>("email");
-                user.phone = r.get<std::string>("phone");
+        //     for (const soci::row& r : rs) {
+        //         User user;
+        //         user.id = r.get<int>("id");
+        //         user.username = r.get<std::string>("username");
+        //         user.full_name = r.get<std::string>("full_name");
+        //         user.email = r.get<std::string>("email");
+        //         user.phone = r.get<std::string>("phone");
                 
-                user.print();
-            }
-        }
+        //         user.print();
+        //     }
+        // }
         
         
     } catch (const std::exception& e) {
