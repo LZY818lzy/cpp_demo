@@ -95,17 +95,28 @@ void becomeDaemon(bool keep_console = false)
 
     // 7. 关闭并重定向标准流
     // ⚠️⚠️⚠️ 关键修改：根据配置决定是否重定向标准流
-    if (!keep_console)
+    int null_fd = open("/dev/null", O_RDWR);
+    if (null_fd != -1)
     {
-        // 关闭并重定向标准流到黑洞
-        int null_fd = open("/dev/null", O_RDWR);
-        if (null_fd != -1)
+        // 永远关闭 stdin（守护进程不需要输入）
+        dup2(null_fd, STDIN_FILENO);
+
+        // ⚠️ 根据配置决定是否重定向 stdout/stderr
+        if (!keep_console)
         {
-            dup2(null_fd, STDIN_FILENO);
+            // 纯后台模式：重定向到黑洞
             dup2(null_fd, STDOUT_FILENO);
             dup2(null_fd, STDERR_FILENO);
-            close(null_fd);
+            g_logger->info("纯后台模式运行，控制台输出已关闭");
         }
+        else
+        {
+            // 调试模式：保留 stdout/stderr 到原终端
+            // ❗ 不做任何重定向，保持原样
+            g_logger->info("调试模式运行，控制台输出已保留");
+        }
+
+        close(null_fd);
     }
 
     g_logger->info("已转换为守护进程运行（PID: {}）", getpid());
@@ -230,6 +241,14 @@ int main()
     while (!bExit)
     {
         g_logger->info("服务运行中...");
+
+        // ✅ 测试：直接写 stderr 验证
+        if (daemonMode && log_console)
+        {
+            // 即使成为守护进程，这行也会显示在终端！
+            std::cerr << "[调试] 守护进程直接写 stderr" << std::endl;
+        }
+
         std::this_thread::sleep_for(std::chrono::seconds(10));
     }
 
