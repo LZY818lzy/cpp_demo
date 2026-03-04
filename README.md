@@ -1,3 +1,7 @@
+编译和构建：在cpp_demo文件夹下输入指令
+cmake --preset linux-debug
+cmake --build build
+
 # 一、libpqxx
 
 ### test1
@@ -133,3 +137,21 @@
 
 - 依赖：SOCI (PostgreSQL backend)、项目的 `CConfig`（请确保 `users` 表存在并含示例字段）。
 - 运行：先配置好 `../config/CConfig.yaml`（填写 DB 连接信息），再构建并运行生成的 `test10` 可执行文件以查看示例输出。
+
+### test11
+
+- 作用：基于 `CConfig + spdlog` 的日志服务示例，支持配置化日志级别/格式、滚动文件输出、可选控制台输出，以及前台/守护进程两种运行模式。
+
+主要行为要点
+
+- 配置：从 `../config/spdlog.yaml` 读取 `daemonMode`、`log_console`、`level`、`pattern`、`filename`、`max_size`、`max_files` 等参数；加载失败时回退代码默认值。
+- 日志：始终启用 `rotating_file_sink`，可按 `log_console` 追加彩色控制台 sink；支持按级别即时刷新。
+- 守护进程：当 `daemonMode=true` 时执行双重 `fork + setsid`，并根据 `log_console` 决定是否保留 `stdout/stderr`。
+- 信号与退出：注册 `SIGINT/SIGTERM`，通过全局退出标志结束主循环，退出前 `flush` 并 `spdlog::shutdown()`。
+- 平台说明：代码依赖 `<unistd.h>`、`fork()`、`/dev/null` 等 POSIX 能力，在 Windows 上不可直接运行。
+
+快速运行提示
+
+- 配置好 `../config/spdlog.yaml` 后构建并运行 `test11`；
+- 前台调试建议：`daemonMode=false` 且 `log_console=true`；
+- 纯后台运行建议：`daemonMode=true` 且 `log_console=false`（日志写入文件）。
