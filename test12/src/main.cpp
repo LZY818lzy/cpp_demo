@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
 
@@ -6,37 +7,47 @@
 using json = nlohmann::json;
 
 int main() {
-    // 1. 设置目标资源地址
-    std::string url = "https://jsonplaceholder.typicode.com/users/5";
+    std::cout << "输入用户 id 发起查询（输入 q 退出）" << std::endl;
 
-    // 2. 发送 GET 请求
-    cpr::Response r = cpr::Get(cpr::Url{url});
-
-    // 3. 检查响应状态
-    if (r.status_code == 200) {
-        // 4. 将字符串格式的响应体解析为 JSON 对象
-        try {
-            json userData = json::parse(r.text);
-
-            // 5. 访问 JSON 中的特定字段
-            std::string name = userData["name"];
-            std::string email = userData["email"];
-            std::string city = userData["address"]["city"];
-
-            std::cout << "--- 用户信息 ---" << std::endl;
-            std::cout << "姓名: " << name << std::endl;
-            std::cout << "邮箱: " << email << std::endl;
-            std::cout << "城市: " << city << std::endl;
-            
-            // 也可以直接打印整齐的 JSON 字符串 (缩进4格)
-            // std::cout << userData.dump(4) << std::endl;
-
-        } catch (json::parse_error& e) {
-            std::cerr << "JSON 解析错误: " << e.what() << std::endl;
+    std::string input;
+    while (true) {
+        std::cout << "\n请输入 id: ";
+        if (!std::getline(std::cin, input)) {
+            break;
         }
-    } else {
-        std::cerr << "请求失败！状态码: " << r.status_code << std::endl;
-        std::cerr << "错误信息: " << r.error.message << std::endl;
+
+        if (input == "q" || input == "Q") {
+            break;
+        }
+
+        int id = 0;
+        try {
+            id = std::stoi(input);
+        } catch (...) {
+            std::cerr << "id 必须是整数，请重新输入。" << std::endl;
+            continue;
+        }
+
+        cpr::Response r = cpr::Get(
+            cpr::Url{"http://127.0.0.1:8080/users"},
+            cpr::Parameters{{"id", std::to_string(id)}}
+        );
+
+        std::cout << "状态码: " << r.status_code << std::endl;
+
+        if (r.status_code == 200) {
+            try {
+                json userData = json::parse(r.text);
+                std::cout << "应答: " << userData.dump(4) << std::endl;
+            } catch (const json::parse_error&) {
+                std::cout << "应答: " << r.text << std::endl;
+            }
+        } else {
+            std::cerr << "请求失败，服务端返回: " << r.text << std::endl;
+            if (!r.error.message.empty()) {
+                std::cerr << "网络错误: " << r.error.message << std::endl;
+            }
+        }
     }
 
     return 0;

@@ -18,6 +18,8 @@ find_package(redis++ CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(SOCI CONFIG REQUIRED COMPONENTS core postgresql)
 find_package(cpr REQUIRED)
+find_package(httplib CONFIG REQUIRED)
+
 
 # 设置公共头文件路径变量
 set(COMMON_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/common_include")
@@ -35,6 +37,7 @@ add_subdirectory(test09)
 add_subdirectory(test10)
 add_subdirectory(test11)
 add_subdirectory(test12)
+add_subdirectory(test13)
 
 message(STATUS "构建类型: ${CMAKE_BUILD_TYPE}")
 message(STATUS "Build 目录: ${CMAKE_BINARY_DIR}")
