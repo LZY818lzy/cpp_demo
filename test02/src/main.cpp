@@ -13,7 +13,8 @@
 #include <pqxx/pqxx> // libpqxx数据库
 #include <sstream>  // 字符串流，用于格式化
 
-#include "CConfig.h" // 你的配置管理类
+//#include "CConfig.h" // 你的配置管理类
+#include "iniconfig.h" // 你的配置管理类
 #include "logging.h" // 公共日志库封装
 
 bool bExit = false;
@@ -252,7 +253,7 @@ int main()
     auto &config = CConfig::GetInstance();
 
     // 使用绝对路径（相对于可执行文件）
-    std::string configPath = "../config/subproject2.yaml";
+    std::string configPath = "../config/test02.ini";
 
     // 加载配置文件
     if (!config.Load(configPath))
