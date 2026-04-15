@@ -183,3 +183,6 @@ cmake --build build
 - 目的：展示 `higplat` 的发布订阅模型：一个线程订阅 `WATCHDOG` 并监听事件，另一个线程周期写入心跳值（`writeb`）。
 - 特点：事件驱动 + 超时 `waitpostdata`（本例用 200ms 轮询超时）并在 `WATCHDOG` 值变化时打印。
 - 依赖：`common_include/higplat.h`（`connectgplat/subscribe/waitpostdata/writeb`）。
+
+
+### test16 实现json嵌套访问
